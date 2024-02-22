@@ -18,22 +18,15 @@ def date_range(start, n):
     if not isinstance(start, str) or not isinstance(n, int):
         raise TypeError
     start_datetime = datetime.strptime(start, "%Y-%m-%d")
-    date_range_list = [start_datetime + timedelta(days=val) for val in range(n)]
-    return date_range_list
-
+    return [start_datetime + timedelta(days=val) for val in range(n)]
 
 
 def add_date_range(values, start_date):
     """Adds a daily date range to the list `values` beginning with
     `start_date`.  The date, value pairs are returned as tuples
     in the returned list."""
-    final_list = []
-    for temp, value in enumerate(values):
-        final_list.append(tuple( [
-            datetime.strptime(start_date, "%Y-%m-%d") + timedelta(days=temp),
-            value
-        ]))
-    return final_list
+    return [(datetime.strptime(start_date, "%Y-%m-%d") + timedelta(days=temp), value) for temp, value in enumerate(values)]
+
 
 def fees_report(infile, outfile):
     """Calculates late fees per patron id and writes a summary report to
