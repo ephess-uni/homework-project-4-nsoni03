@@ -27,8 +27,13 @@ def add_date_range(values, start_date):
     """Adds a daily date range to the list `values` beginning with
     `start_date`.  The date, value pairs are returned as tuples
     in the returned list."""
-    pass
-
+    final_list = []
+    for temp, value in enumerate(values):
+        final_list.append(tuple( [
+            datetime.strptime(start_date, "%Y-%m-%d") + timedelta(days=temp),
+            value
+        ]))
+    return final_list
 
 def fees_report(infile, outfile):
     """Calculates late fees per patron id and writes a summary report to
