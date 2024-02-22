@@ -32,17 +32,26 @@ def fees_report(infile, outfile):
     """Calculates late fees per patron id and writes a summary report to
     outfile."""
     with open(infile) as f:
-        data = list(DictReader(f))
+        filtered_lis=[]
+        DictReader_obj = DictReader(f)
+        for item in DictReader_obj:
+            dict={}
+            day=datetime.strptime(item['date_returned'],'%m/%d/%Y')- datetime.strptime(item['date_due'],'%m/%d/%Y') 
+            dict["patron_id"]=item['patron_id']
+            if(day.days>0):
+                dict["late_fees"]=round(day.days*0.25, 2)
+                filtered_lis.append(dict)
+            else:
+                dict["late_fees"]=float(0)
+                filtered_lis.append(dict)
+        agg_dict = {}
+        for dict in filtered_lis:
+            agg_dict[dict['patron_id']] = agg_dict.get(dict['patron_id'], 0) + dict['late_fees']
+        final_list = [{'patron_id': key, 'late_fees': '{:.2f}'.format(value)} for key, value in agg.items()]
 
-    final_list = [
-        {'patron_id': item['patron_id'], 'late_fees': '{:.2f}'.format(max(0, (datetime.strptime(item['date_returned'], '%m/%d/%Y') - datetime.strptime(item['date_due'], '%m/%d/%Y')).days * 0.25))}
-        for item in data
-    ]
-
-    with open(outfile, "w", newline="") as file:
+    with open(outfile,"w", newline="") as file:
         writer = DictWriter(file, fieldnames=['patron_id', 'late_fees'])
         writer.writeheader()
-        writer.writerows(final_list)
 
 
 # The following main selection block will only run when you choose
